@@ -1,0 +1,10 @@
+#goal definition
+float32 depth
+float32 translate
+
+---
+#result definition
+bool result
+---
+#feedback
+bool result
