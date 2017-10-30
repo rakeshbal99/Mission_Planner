@@ -11,7 +11,7 @@ import actionlib_mission.msg
 def mission_client():
     # Creates the SimpleActionClient, passing the type of the action
     # (FibonacciAction) to the constructor.
-    client = actionlib.SimpleActionClient('depth', actionlib_mission.msg.missionAction)
+    client = actionlib.SimpleActionClient('depth', missionAction)
 
     # Waits until the action server has started up and started
     # listening for goals.

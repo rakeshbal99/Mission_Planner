@@ -1,8 +1,10 @@
 #goal definition
-int32 order
+float32 depth
+float32 translate
+
 ---
 #result definition
-int32[] sequence
+bool result
 ---
 #feedback
-int32[] sequence
+bool result
