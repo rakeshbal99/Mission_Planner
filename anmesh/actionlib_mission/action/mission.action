@@ -1,7 +1,6 @@
 #goal definition
 float32 depth
 float32 translate
-bool rotate
 
 ---
 #result definition
