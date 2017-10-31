@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest('demo')
+import roslib; roslib.load_manifest('actionlib_mission')
 import rospy
 import smach
 import smach_ros
