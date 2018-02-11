@@ -5,6 +5,9 @@ import rospy
 import smach
 import smach_ros
 import actionlib
+import tf
+import geometry_msgs.msg
+from nav_msgs.msg import Odometry
 
 
 import actionlib_mission.msg
@@ -38,8 +41,40 @@ class Depth(smach.State):
 class Translate(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['SUCCESS_T','FAIL_T']) #Here FAIL_T is the Failure of Translate State
+       
+
+
+    def transform(self,translate):
+    	 
+
+		try :
+			listener = tf.TransformListener()
+			listener.waitForTransform("/base_link", "/odom", rospy.Time(0),rospy.Duration(4.0))
+			POS_point=PointStamped()
+			POS_point.header.frame_id = "base_link"
+			POS_point.header.stamp =rospy.Time(0)
+			POS_point.point.x=translate
+			POS_laser_point.y=-0.5
+			POS_point.point.z=0.0
+
+			p=listener.transformPoint("odom",POS_point)
+			
+		except Exception as e: 
+			print e # chk rhere
+
+			
+	    	return p
 
     def execute(self, userdata):
+
+    	def callback(data):
+	    	goal.pose.position.x=data.position.x
+	        goal.pose.position.y=data.position.y
+	        goal.pose.position.z=data.position.z
+	        goal.pose.orientation.x=data.orientation.x
+	        goal.pose.orientation.y=data.orientation.y
+	        goal.pose.orientation.z=data.orientation.z
+	        goal.pose.orientation.w=data.orientation.w
         rospy.loginfo('Executing state TRANSLATE')
         # if self.distance == 10 and rotate==false and self.depth < d1 and self.depth>d2 :
         #     return 'reached_10'
@@ -47,14 +82,25 @@ class Translate(smach.State):
         #     return 'reached_20'
         # else :
         #     return 'FAIL_T'
+
+
+
+
         client = actionlib.SimpleActionClient('translate', actionlib_mission.msg.missionAction)
 
         client.wait_for_server()
 
     
         goal = actionlib_mission.msg.missionGoal()
-        goal.translate=10
-        goal.depth=10
+        goal.GoalType=0
+        p=transform(10)#sending 10 m forward
+
+ 		# rospy.init_node("trasnformer", anonymous=True)
+    	rospy.Subscriber("odometry/filtered",Odometry, callback)
+
+        goal.pose.position.x+=p.position.x
+        goal.pose.position.y+=p.position.y
+        goal.pose.position.z+=p.position.z
    
         client.send_goal(goal)
 
@@ -114,15 +160,15 @@ def main():
     # Execute SMACH plan
     outcome = sm.execute()
 
-    sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
-    sis.start()
+#     sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
+#     sis.start()
 
-# Execute the state machine
-    outcome = sm.execute()
+# # Execute the state machine
+#     outcome = sm.execute()
 
-# Wait for ctrl-c to stop the application
-    rospy.spin()
-    sis.stop()
+# # Wait for ctrl-c to stop the application
+#     rospy.spin()
+#     sis.stop()
 
 
 if __name__ == '__main__':
